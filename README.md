@@ -1,5 +1,34 @@
 # hermes-lg-end-cycle 🎵
 
+> [!WARNING]
+> **⚠️ PROYECTO DESCONTINUADO**
+>
+> Hermes Desktop ya incluye un ajuste nativo para el sonido de finalización:
+> **Settings → Sounds → "Sonido de finalización"** (*Completion Sound*), donde
+> puedes elegir entre varios presets sin instalar nada.
+>
+> Este plugin ya **no se mantiene** y no se recomienda su instalación. El
+> `dist-patch.js` además ya no funciona con las builds actuales de Hermes
+> Desktop (la función que parchaba cambió de firma).
+
+---
+
+## Descargar el sonido
+
+El MP3 estilo LG sigue disponible por si quieres usarlo por tu cuenta:
+
+**[`end-cycle.mp3`](https://github.com/ZeroDragon/hermes-lg-end-cycle/raw/main/end-cycle.mp3)** (~157 KB, 128 kbps, 48 kHz, estéreo)
+
+> "Life's Good" — el sonidito de lavadora LG que sonaba al terminar un turno
+> de Hermes.
+
+---
+
+<details>
+<summary><strong>📖 Documentación original (archivo histórico)</strong></summary>
+
+# hermes-lg-end-cycle 🎵
+
 Plugin auto-contenido para **Hermes Desktop** que reemplaza el chime sintetizado
 de finalización de turno por un **MP3 personalizado** con estilo **LG**.
 
@@ -63,6 +92,7 @@ cp plugin.js ~/.hermes/desktop-plugins/lg-end-cycle/
 2. El plugin se activa automáticamente (no requiere configuración)
 
 Para verificar que está cargado:
+
 - `⌘K` → Settings → Plugins → deberías ver **LG End Cycle Sound** listado
 
 ---
@@ -84,10 +114,11 @@ git checkout -- apps/desktop/dist/ apps/desktop/release/
 ## Archivos
 
 | Archivo | Propósito |
-|---------|-----------|
+| --- | --- |
 | `plugin.js` | Plugin Hermes Desktop auto-contenido (~215 KB, MP3 inline) |
 | `dist-patch.js` | Script Node.js que silencia el chime built-in |
 | `install.sh` | Instalador todo-en-uno (plugin + patch) |
+| `end-cycle.mp3` | El sonido original, extraído del plugin para descarga directa |
 
 ---
 
@@ -114,8 +145,14 @@ Si tu bundle está en otra ruta, pásala explícitamente:
 node dist-patch.js /ruta/completa/a/index-XXXX.js
 ```
 
+> **Nota (octubre 2026):** en las builds actuales de Hermes Desktop este patch
+> ya no encuentra la función objetivo y reporta `No match`. Usa el ajuste
+> nativo **Settings → Sounds → Sonido de finalización** en su lugar.
+
 ---
 
 ## Licencia
 
 MIT — haz lo que quieras con el sonido, el plugin y los scripts.
+
+</details>
