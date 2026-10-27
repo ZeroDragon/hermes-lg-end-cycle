@@ -1,158 +1,85 @@
 # hermes-lg-end-cycle 🎵
 
-> [!WARNING]
-> **⚠️ PROYECTO DESCONTINUADO**
->
-> Hermes Desktop ya incluye un ajuste nativo para el sonido de finalización:
-> **Settings → Sounds → "Sonido de finalización"** (*Completion Sound*), donde
-> puedes elegir entre varios presets sin instalar nada.
->
-> Este plugin ya **no se mantiene** y no se recomienda su instalación. El
-> `dist-patch.js` además ya no funciona con las builds actuales de Hermes
-> Desktop (la función que parchaba cambió de firma).
-
----
-
-## Descargar el sonido
-
-El MP3 estilo LG sigue disponible por si quieres usarlo por tu cuenta:
-
-**[`end-cycle.mp3`](https://github.com/ZeroDragon/hermes-lg-end-cycle/raw/main/end-cycle.mp3)** (~157 KB, 128 kbps, 48 kHz, estéreo)
-
-> "Life's Good" — el sonidito de lavadora LG que sonaba al terminar un turno
-> de Hermes.
-
----
-
-<details>
-<summary><strong>📖 Documentación original (archivo histórico)</strong></summary>
-
-# hermes-lg-end-cycle 🎵
-
-Plugin auto-contenido para **Hermes Desktop** que reemplaza el chime sintetizado
-de finalización de turno por un **MP3 personalizado** con estilo **LG**.
+Plugin auto-contenido para **Hermes Desktop** que reproduce un sonido de
+finalización personalizado (por defecto, el MP3 estilo **LG**) al terminar
+cada turno del agente.
 
 > "Life's Good" — escucha un sonido limpio y agradable cuando Hermes termina
-> de procesar tu request, en vez del pitido sintético por defecto.
+> de procesar tu request.
+
+**v3** — sin huella visual: nada anclado al sidebar. Todo se maneja desde la
+paleta de comandos (`⌘K`).
 
 ---
 
-## Cómo funciona
+## Qué hace
 
-1. **Plugin** (`plugin.js`) — se copia a `~/.hermes/desktop-plugins/lg-end-cycle/`
-   y la app lo carga automáticamente. Escucha el evento `message.complete` y
-   reproduce el MP3 (embebido inline como data URL — no requiere archivos
-   externos).
-
-2. **Patch al dist** (`dist-patch.js`) — silencia el chime built-in de Hermes
-   Desktop parchando la función `playCompletionSound` a no-op, para que no se
-   escuchen dos sonidos al mismo tiempo.
-
----
+- Reproduce tu MP3 cuando se emite el evento `message.complete`.
+- El MP3 estilo LG viene **embebido** en el plugin (data URL), funciona
+  out-of-the-box.
+- Comando `⌘K` → **"Sonido de finalización: configurar MP3…"**: abre una
+  página interna (solo existe mientras la usas) donde puedes:
+  - **Cargar MP3…** — elige cualquier MP3 de tu equipo (máx. 2 MB).
+    Queda guardado en el storage del plugin y sobrevive reinicios.
+  - **Probar** — preview del sonido actual.
+  - **Restaurar** — volver al MP3 LG incluido.
 
 ## Instalación
 
-### Rápida (recomendada)
-
 ```bash
-# Clona el repo
 git clone https://github.com/ZeroDragon/hermes-lg-end-cycle.git
-cd hermes-lg-end-cycle
-
-# Instala plugin + patch
-bash install.sh
-```
-
-### Manual
-
-```bash
-# 1. Copia el plugin
 mkdir -p ~/.hermes/desktop-plugins/lg-end-cycle
-cp plugin.js ~/.hermes/desktop-plugins/lg-end-cycle/
-
-# 2. Parcha el bundle (una línea)
-node dist-patch.js
+cp hermes-lg-end-cycle/plugin.js ~/.hermes/desktop-plugins/lg-end-cycle/
 ```
 
-### Sin patch (solo plugin)
+Luego, en Hermes Desktop: `⌘K` → **Reload desktop plugins**.
 
-Si prefieres conservar el sonido built-in (escucharás ambos):
+## Importante: silenciar el chime nativo
 
-```bash
-# Solo copia el plugin
-mkdir -p ~/.hermes/desktop-plugins/lg-end-cycle
-cp plugin.js ~/.hermes/desktop-plugins/lg-end-cycle/
-```
+Si no haces esto escucharás **dos** sonidos. No hay que parchear nada:
+Hermes Desktop incluye el preset **None** para su sonido nativo.
 
----
+**Settings → Sounds → Sonido de finalización → None**
 
-## Activación
+## Requisitos
 
-1. Reinicia Hermes Desktop **o** abre la paleta (`⌘K`) → **Reload desktop plugins**
-2. El plugin se activa automáticamente (no requiere configuración)
-
-Para verificar que está cargado:
-
-- `⌘K` → Settings → Plugins → deberías ver **LG End Cycle Sound** listado
-
----
+- **Hermes Desktop** (la app de escritorio Electron, no el CLI ni el gateway).
+- No requiere Node.js: el plugin es un solo archivo ESM que la app carga
+  directamente.
 
 ## Desinstalación
 
 ```bash
-# Quita el plugin
 rm -rf ~/.hermes/desktop-plugins/lg-end-cycle
-
-# Restaura el sonido built-in (revertir el patch del bundle)
-cd ~/.hermes/hermes-agent
-git checkout -- apps/desktop/dist/ apps/desktop/release/
-# O si instalaste desde otra fuente, reinstala Hermes Desktop
 ```
 
----
+Y en `⌘K` → **Reload desktop plugins**. (Opcionalmente regresa el sonido
+nativo en Settings → Sounds.)
 
 ## Archivos
 
 | Archivo | Propósito |
 | --- | --- |
-| `plugin.js` | Plugin Hermes Desktop auto-contenido (~215 KB, MP3 inline) |
-| `dist-patch.js` | Script Node.js que silencia el chime built-in |
-| `install.sh` | Instalador todo-en-uno (plugin + patch) |
-| `end-cycle.mp3` | El sonido original, extraído del plugin para descarga directa |
+| `plugin.js` | Plugin Hermes Desktop auto-contenido (~220 KB, MP3 inline + picker) |
+| `end-cycle.mp3` | El sonido LG original, para descarga directa |
+| `dist-patch.js` | ⚠️ Obsoleto: ya no aplica en builds recientes (la app ahora trae el preset "None") |
+| `install.sh` | ⚠️ Obsoleto: instala la v1 con patch; usa la copia manual de arriba |
 
----
+## Notas técnicas
 
-## Requisitos
+- La página de configuración se registra en el área `routes` y el comando en
+  `palette` — cero paneles, chips o navegación permanente.
+- El storage del plugin (`ctx.storage`) guarda el MP3 custom como data URL;
+  el límite práctico es de ~2 MB de audio.
+- Probado en Hermes Desktop (macOS), octubre 2026.
 
-- **Hermes Desktop** (la app de escritorio Electron, no el CLI ni el gateway)
-- **Node.js** ≥ 18 (solo para `dist-patch.js` o `install.sh`; el plugin en sí
-  no requiere Node)
+## Historial
 
----
-
-## Compatibilidad
-
-Probado en Hermes Desktop (macOS). El `dist-patch.js` busca el bundle en
-múltiples ubicaciones conocidas:
-
-- `~/.hermes/hermes-agent/apps/desktop/dist/assets/index-*.js` (dev build)
-- `~/.hermes/hermes-agent/apps/desktop/release/mac-arm64/...` (release build)
-- `/Applications/Hermes.app/Contents/Resources/...` (system install)
-
-Si tu bundle está en otra ruta, pásala explícitamente:
-
-```bash
-node dist-patch.js /ruta/completa/a/index-XXXX.js
-```
-
-> **Nota (octubre 2026):** en las builds actuales de Hermes Desktop este patch
-> ya no encuentra la función objetivo y reporta `No match`. Usa el ajuste
-> nativo **Settings → Sounds → Sonido de finalización** en su lugar.
-
----
+- **v1** — plugin + patch al bundle para silenciar el chime sintetizado.
+- **v2** — panel de configuración (pane) para cargar MP3 custom.
+- **v3** — sin huella visual: comando en `⌘K` + página bajo demanda; sin
+  patch gracias al preset nativo "None".
 
 ## Licencia
 
 MIT — haz lo que quieras con el sonido, el plugin y los scripts.
-
-</details>
